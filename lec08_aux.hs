@@ -12,7 +12,7 @@ biggest2 lst =
   else if length lst == 1 then head lst
   else let x = head lst
            xs = tail lst
-           biggestxX = biggest2 xs
+           biggestXs = biggest2 xs
        in max x biggestXs
 
 end :: [a] -> a
@@ -48,8 +48,3 @@ rev lst = aux [] lst
         aux acc (x:xs) = aux (x:acc) xs
 --rev "hello"
 --"olleh"
---
---
---
---
---
