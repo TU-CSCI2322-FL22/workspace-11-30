@@ -32,3 +32,5 @@ singletons lst = map (\x -> [x]) lst
 
 scores = [10, 45, 13, 92, 42, 19] 
 names = ["Jack", "Jane", "Joe", "Josh", "Jesus", "Jay"]
+
+--use zipWith to combine scores and anmes into ["Jack: 10", "Jane: 45"...]
