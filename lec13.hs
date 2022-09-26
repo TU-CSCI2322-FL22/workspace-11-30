@@ -29,8 +29,11 @@ add7 x = x + const
 evens3 lst = filter (\x -> x `mod` 2 ==0) lst
 
 singletons lst = map (\x -> [x]) lst
+singletons2 = map (\x -> [x]) 
 
 scores = [10, 45, 13, 92, 42, 19] 
 names = ["Jack", "Jane", "Joe", "Josh", "Jesus", "Jay"]
 
 --use zipWith to combine scores and anmes into ["Jack: 10", "Jane: 45"...]
+report = zipWith (++) (map (++": ") names) (map show scores)
+report2 = zipWith (\name score -> name ++ ": " ++ show score) names scores
