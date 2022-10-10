@@ -21,8 +21,20 @@ prodList lst = foldr (\x recVal -> x * recVal) 1 lst
   -- a. (Optional) Using a filter and built-in functions
 
   -- b. Using a fold
+zeroDetector :: [Int] -> Bool 
+zeroDetector [] = False
+zeroDetector (x:xs) = if x == 0 then True else zeroDetector xs
+
+zeroDetector2 lst = foldr (\x acc -> (x == 0) || acc) False lst
 
 -- 4. Using a fold, define positives :: [Int] -> [Int] that returns the positive elements.
+positives :: [Int] -> [Int] 
+positives lst = foldr (\x positivesInTail -> if x > 0 then x:positivesInTail else positivesInTail) [] lst
+
+-- 4.5 Write biggest using a fold
+biggest lst = foldr (\x acc -> max x acc) (error "empty list") lst --oh no!
+biggest2 lst = foldr1 (\x acc -> max x acc) lst --aha!
+
 
 -- 5. Using a fold, define range :: [Int] -> (Int,Int)
 
@@ -38,7 +50,7 @@ prodList lst = foldr (\x recVal -> x * recVal) 1 lst
 
 -- 9. Define sumValues :: [(a, Int)] -> Int that sums the values of an association list.
 
--- 10. Define bestKey :: [(a, Int)] -> a that finds the value with the best key.
+-- 10. Define bestKey :: [(a, Int)] -> a that finds the key with the best value.
 
 -- 11. Using exists, define isPrime :: Int -> Bool
   -- a. First define isMultiple :: Int -> Int -> Bool that takes two Ints and returns True if the first can be divided by the second.

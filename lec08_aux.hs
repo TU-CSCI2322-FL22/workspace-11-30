@@ -2,10 +2,10 @@ import Debug.Trace
 
 biggest :: (Ord a, Show a) => [a] -> a
 biggest [] = error "There is no biggest element."
-biggest [x] = traceShowId x
+biggest [x] = x
 biggest (x:xs) =
   let biggestXs = biggest xs
-  in traceShow (x, xs) ( max x biggestXs)
+  in max x biggestXs
 
 biggest2 lst =
   if null lst then error "ther eis no biggest element."
