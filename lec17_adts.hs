@@ -1,4 +1,7 @@
-data Contest = Rock | Scissor | Paper deriving Show
+data Contest = Rock | Scissor | Paper deriving (Show, Read)
+--This actually works!
+x :: Contest
+x = read "Paper"
 
 rps :: Contest -> Contest -> String
 rps Rock Scissor = "Player One Wins"
