@@ -19,18 +19,24 @@ lexer :: String -> Maybe [Token]
 lexer str = seqMaybe $ map lexWord (words str)
 
 seqMaybe :: [Maybe a] -> Maybe [a]
-seqMaybe (x:xs) = 
-  case (x, seqMaybe xs) of
+seqMaybe (x:xs) = do
+  xv <- x
+  xsv <- seqMaybe xs
+  return (xv:xsv)
+seqMaybe [] = Just []
+
+seqMaybeOld (x:xs) = 
+  case (x, seqMaybeOld xs) of
     (Just v, Just xsvals) -> Just (v:xsvals)
     _ -> Nothing
-seqMaybe [] = Just []
 
 lexWord :: String -> Maybe Token
 lexWord "+" = Just $ OpTok Plus
 lexWord "-" = Just $ OpTok Minus
 lexWord "/" = Just $ OpTok Div
 lexWord "*" = Just $ OpTok Times
-lexWord str = applyToMaybe NumTok (readMaybe str)
+lexWord str = do intVal <- readMaybe str
+                 return $ NumTok intVal
 
 --built in as fmap
 applyToMaybe :: (a -> b) -> Maybe a -> Maybe b
@@ -63,21 +69,30 @@ parseCrash toks =
           in (OpE op lt rt, afterRight)
 
 parse :: [Token] -> Maybe Expr
-parse toks = 
-  case aux toks of
+parse toks = do
+    (expr, toks) <- aux toks
+    case toks of
+      [] -> Just expr
+      _ -> Nothing
+  {-case aux toks of
     Nothing -> Nothing
     Just (expr, []) -> Just expr
-    Just (expr, toks) -> Nothing -- error $ "Too many tokens: " ++ show toks
+    Just (expr, toks) -> Nothing -- error $ "Too many tokens: " ++ show toks-}
   where aux :: [Token] -> Maybe (Expr, [Token])
         aux []     = Nothing -- error "No tokens to parse"
         aux (NumTok x:ts) = Just (NumE x, ts)
+        aux (OpTok op:ts) = 
+          do (lt, afterLeft) <- aux ts
+             (rt, afterRight) <- aux afterLeft
+             Just (OpE op lt rt, afterRight)
+{-
         aux (OpTok op:ts) = 
           case aux ts of
             Nothing -> Nothing
             Just (lt, afterLeft) -> 
               case aux afterLeft of
                 Nothing -> Nothing
-                Just (rt, afterRight) -> Just (OpE op lt rt, afterRight)
+                Just (rt, afterRight) -> Just (OpE op lt rt, afterRight)-}
 
 
 parseOld []     = error "No tokens to express"
@@ -133,3 +148,8 @@ main = do
     Nothing -> putStrLn "Invalid line, try again."
     Just val -> putStrLn $ show val
   main
+
+monadTuple xs ys = do
+   x <- xs
+   y <- ys
+   return (x,y)
