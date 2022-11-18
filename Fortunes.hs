@@ -1,9 +1,14 @@
 module Fortunes where
 import Data.Char
+import System.IO
+import System.Environment
+
 
 main :: IO ()
 main = do
-  contents <- readFile "fortunes.txt"
+  args <- getArgs
+  let fname = if null args then "fortunes.txt" else head args
+  contents <- readFile fname
   let fortunes = lines contents
   name <- prompt "What is your name"
   let index = nameToInt name `mod` length fortunes
@@ -23,6 +28,7 @@ tellFortune fortunes index = do
 prompt :: String -> IO String
 prompt question = do
   putStr $ question ++ ": "
+  hFlush stdout
   response <- getLine
   return response
 
