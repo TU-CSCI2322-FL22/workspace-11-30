@@ -1,6 +1,8 @@
 module Fortunes where
 import Data.Char
 import System.IO
+import Control.Monad
+import System.Exit
 import Text.Read (readMaybe)
 import System.Environment
 import System.Console.GetOpt
@@ -20,16 +22,18 @@ main = do
   let (flags, inputs, error) = getOpt Permute options args
   putStrLn $ show (flags, inputs, error)
   let num = getNumber flags
-  if Help `elem` flags
-  then printHelp
-  else 
-    do let fname = if null inputs then "fortunes.txt" else head inputs
-       contents <- readFile fname
-       let fortunes = lines contents
-       if Quick `elem` flags
-       then tellFortuneQuick fortunes num
-       else interactiveFortunes fortunes 
-       
+  if (Help `elem` flags) 
+    then putStrLn $ usageInfo "Fortunes [option] [file]" options
+    else do
+        let fname = if null inputs then "fortunes.txt" else head inputs
+        contents <- readFile fname
+        let fortunes = lines contents
+        (chooseAction flags) fortunes
+      
+chooseAction :: [Flag] -> [String] -> IO ()
+chooseAction flags 
+  | Quick `elem` flags = tellFortuneQuick (getNumber flags)
+  | otherwise = interactiveFortunes
 
 getNumber :: [Flag] -> Int
 getNumber ((Number x):_) = 
@@ -39,8 +43,8 @@ getNumber ((Number x):_) =
 getNumber (_:flags) = getNumber flags
 getNumber [] = 1
 
-tellFortuneQuick :: [String] -> Int -> IO ()
-tellFortuneQuick fortunes x =  
+tellFortuneQuick :: Int -> [String] -> IO ()
+tellFortuneQuick x fortunes =  
   let xFortunes = take x $ drop 6 fortunes
   in putStrLn (unlines xFortunes)
 
@@ -51,10 +55,6 @@ interactiveFortunes fortunes =
     let index = nameToInt name `mod` length fortunes
     putStrLn $ "Hello " ++ name ++ "!"
     tellFortune fortunes index
-
-printHelp :: IO ()
-printHelp = putStrLn $ usageInfo "Fortunes [option] [file]" options
-
 
 tellFortune :: [String] -> Int -> IO ()
 tellFortune fortunes index = do
